@@ -1,0 +1,27 @@
+{
+  "name": "dane",
+  "version": "1.0.0",
+  "description": "cos",
+  "main": "index.js",
+  "scripts": {
+    "test": "as"
+  },
+  "repository": {
+    "type": "git",
+    "url": "s"
+  },
+  "keywords": [
+    "das"
+  ],
+  "author": "a",
+  "license": "ISC",
+  "dependencies": {
+    "email-existence": "^0.1.6",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "jade": "^1.11.0",
+    "mysql": "^2.18.1",
+    "nodemailer": "^6.4.4",
+    "password-hash": "^1.2.2"
+  }
+}

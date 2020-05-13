@@ -1,0 +1,95 @@
+doctype html
+html(lang='pl')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    link(rel='stylesheet', href='css/fontello.css')
+    meta(http-equiv='X-UA-Compatible', content='ie=edge')
+    link(rel='stylesheet', href='css/MainPageShowTable')
+    title Document
+  body
+    section.container
+      section.menu
+        section.logo
+          h2 BookWeb
+        section.optionMenu
+          a.oneOption
+            span.icon-database
+            h3 Baza danych
+      section.top
+        section.titleAndRole
+          h3 Główny administrator
+        section.mainContent
+          section.tableName
+            h3 Użytkownik
+            h3 Werfikacja Konta
+          section.tableContent
+            table
+              tbody
+                tr
+                  td Id
+                  td Login
+                  td Hasło
+                  td Email
+                  td Uprawnienia
+                  td
+              
+                tr 
+                    each user in danes
+                     tr
+                      td=user.IdUser
+                      td=user.Login
+                      td=user.Password
+                      td=user.EmailAdress
+                      td=user.HavePrivilagesId
+                      td.icon-pencil
+                       a(href='')
+                      td.icon-cancel-circled
+
+          section.nextDataTable
+            a.icon-right-circled(href='')
+            h5 7/12
+            a.icon-left-circled(href='')
+      section.right
+        section.name
+          img(src='img/user.jpg', alt='')
+          h3 Błażej Jasiński
+          a.icon-logout
+        section.statistics
+          h3 Statystyki
+          h4 Wejścia
+          table
+            tbody
+              tr
+                td Od początku
+                td 240000
+              tr
+                td Dziś
+                td 2400
+              tr
+                td Tydzień
+                td 24000
+              tr
+                td Miesiąc
+                td 240000
+          h4 Nowi użytkownicy
+          table
+            tbody
+              tr
+                td Od początku
+                td 240000
+              tr
+                td Dziś
+                td 2400
+              tr
+                td Tydzień
+                td 24000
+              tr
+                td Miesiąc
+                td 240000
+          h4 Online
+          table
+            tbody
+              tr
+                td Użytkownicy
+                td 240

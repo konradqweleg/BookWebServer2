@@ -1,0 +1,252 @@
+$backgroundTheme:#ccc;
+$mainColor:#fff;
+$breakBetwenSection:3px;
+$mainBrightColor:#fdaa27;
+
+body{
+    margin:0;
+}
+
+
+
+
+section.container{
+    background-color: $backgroundTheme;
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 9fr 70fr 24fr;
+
+
+
+    .menu{
+        background-color:$mainColor ;
+        border-right:$breakBetwenSection solid $backgroundTheme;
+        display: grid;
+        grid-template-rows: 7vh repeat(5,7vh);
+
+        .logo{
+            text-align: center;
+            color:$mainBrightColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .optionMenu{
+            margin-top: 2.5vh;
+
+            .oneOption{
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                text-align: center;
+                align-items:center;
+
+                &:hover{
+                    cursor: pointer;
+                    span{
+                        color:$mainBrightColor;
+                    }
+                }
+
+                span{
+                    font-size: 20px;
+                    color:$backgroundTheme;
+
+                }
+                h3{
+                    font-size: 12px;
+                    text-transform: uppercase;
+                    margin-top: 0.5em;
+                }
+            }
+
+        }
+
+
+    }
+
+    .top{
+        background-color:$mainColor ;
+
+        display: grid;
+        grid-template-rows: 7vh 93vh;
+        .titleAndRole{
+            border-bottom: $breakBetwenSection solid $backgroundTheme;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+        }
+
+        .mainContent{
+            border-right:$breakBetwenSection solid $backgroundTheme;
+
+            .tableName{
+                margin-left: 2vw;
+                margin-top: 2vh;
+                display: flex;
+                flex-direction: row;
+                color:$backgroundTheme;
+
+                h3{
+                    margin: 0.3vw;
+
+                    padding-bottom: 0.3vw;
+                    text-transform: uppercase;
+                    font-size: 14px;
+
+                    &:hover{
+                        border-bottom: 2px solid $mainBrightColor;
+                        cursor: pointer;
+                    }
+                }
+
+
+
+            }
+
+            .nextDataTable{
+                display: flex;
+                flex-direction: row-reverse;
+                margin: 1.5vw;
+                font-size: 30px;
+                align-items: flex-start;
+
+                h5{
+                    margin: 0;
+
+                }
+
+                a{
+                    text-decoration: none;
+                    color:black;
+                    &:hover{
+                        color:$mainBrightColor;
+
+                    }
+                }
+            }
+
+
+            .tableContent{
+                margin-left: 2vw;
+                margin-top: 2vh;
+                color:$backgroundTheme;
+                width: 90%;
+
+                table{
+                    width: 100%;
+                    border-collapse: collapse;
+
+                    tr:first-child{
+                         color:$backgroundTheme
+                    }
+
+                    tr{
+                        border-bottom: 1px solid $backgroundTheme;
+                        color:black;
+
+                         td{
+                            margin-left: 2vw;
+                            padding: 1vh;
+
+                            &.icon-cancel-circled{
+
+
+                                padding-left: 0;
+
+                                &:hover{
+                                    color:red;
+                                    cursor: pointer;
+
+                                }
+                            }
+
+                            &.icon-pencil{
+                                padding-right: 0;
+                                cursor: pointer;
+                                &:hover{
+                                 color:$mainBrightColor;
+                                }
+                            }
+                         }
+                    }
+            }
+
+            }
+        }
+
+    }
+
+    .right{
+        background-color:$mainColor ;
+        display: grid;
+        grid-template-rows: 7vh 93vh;
+
+
+        .statistics{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            h3{
+                text-align: center;
+            }
+            h4{
+                text-transform: uppercase;
+                font-size: 14px;
+                margin-bottom: 0;
+                color:$backgroundTheme;
+            }
+
+            table{
+                border-collapse: collapse;
+                td{
+                    padding-right: 1vw;
+                }
+
+                tr{
+                    border-bottom: 1px solid $backgroundTheme;
+                }
+
+
+            }
+
+        }
+
+        .name{
+            border-bottom: $breakBetwenSection solid $backgroundTheme;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+
+
+
+            align-items: center;
+
+            img{
+                height:4vh;
+                border-radius: 50%;
+                border:2px solid $backgroundTheme;
+                margin-right: 1vw;
+            }
+
+            h3{
+                font-size: 16px;
+                margin-right: 1vw;
+            }
+            a{
+                margin-right: 1vw;
+                &:hover{
+                    color:red;
+                    cursor: pointer;
+                }
+            }
+        }
+
+
+    }
+
+}

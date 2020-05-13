@@ -1,0 +1,9 @@
+
+.icon-logout:before { content: '\e800'; } /* '' */
+.icon-user:before { content: '\e801'; } /* '' */
+.icon-pencil:before { content: '\e802'; } /* '' */
+.icon-cancel-circled:before { content: '\e803'; } /* '' */
+.icon-left-circled:before { content: '\f0a8'; } /* '' */
+.icon-right-circled:before { content: '\f0a9'; } /* '' */
+.icon-menu:before { content: '\f0c9'; } /* '' */
+.icon-database:before { content: '\f1c0'; } /* '' */

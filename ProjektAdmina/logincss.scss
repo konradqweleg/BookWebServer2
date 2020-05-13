@@ -1,0 +1,60 @@
+$backgroundTheme:#ccc;
+$mainColor:#fff;
+$breakBetwenSection:3px;
+$mainBrightColor:#fdaa27;
+body {
+background-color: $mainColor;
+display: grid;
+height: 100vh;
+margin:0;
+grid-template-rows: 2fr 8fr;
+
+.login{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    form{
+        display: flex;
+        margin-bottom: 20vh;
+        flex-direction: column;
+       input{
+           margin: 0.5vh;
+           width: 25vw;
+           height: 5vh;
+           text-align: center;
+           text-transform: uppercase;
+           border: 0;
+           border-bottom: 3px solid $backgroundTheme ;
+       }
+       input[type=submit]{
+           background-color: $mainBrightColor;
+           border-bottom: 0;
+           &:hover{
+               cursor: pointer;
+               background-color: #ecaa26;
+
+           }
+       }
+    }
+}
+
+.title{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2vh;
+
+    h2,h3{
+        margin: 0;
+        text-transform: uppercase;
+    }
+    h3{
+        font-size: 15px;
+    }
+}
+
+
+
+}
