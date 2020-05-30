@@ -101,6 +101,51 @@ app.get('/download', function(req, res){
   }
 
 
+
+  app.get("/getUserImageProfile",function(request,response){
+	let userEmail=request.query.userEmail
+	showLogMessagge("Pobieram zdjęcie użytkownika")
+
+	const fs = require('fs')
+	const path = 'C:\\BookWebServer\\userImg\\'+userEmail+".jpg"
+
+	try {
+ 	 if (fs.existsSync(path)) {
+		response.sendFile("C:\\BookWebServer\\userImg\\"+userEmail+".jpg")
+    	
+ 	 }else{
+		response.sendFile("C:\\BookWebServer\\userImg\\blazej.jpg")
+	  }
+	} catch(err) {
+  		console.error(err)
+	}
+
+
+
+
+  })
+
+
+
+
+
+app.get("/getUserDataSettings",function(request,response){
+	let userEmail=request.query.userEmail
+	showLogMessagge("SELECT user.Login as login,sum(book.countPage) as readPage,count(*) as readBook,avg(single_book_mark.MarkBook) as avgMark FROM `user` inner join single_book_mark on single_book_mark.IdUser=user.IdUser inner join book on book.idBook=single_book_mark.IdBook WHERE EmailAdress="+userEmail)
+	connection.query("SELECT user.Login as login,sum(book.countPage) as readPage,count(*) as readBook,avg(single_book_mark.MarkBook) as avgMark FROM `user` inner join single_book_mark on single_book_mark.IdUser=user.IdUser inner join book on book.idBook=single_book_mark.IdBook WHERE EmailAdress='"+userEmail+"'",function(err,res,x){
+		if(res.length>0){
+			response.setHeader('Content-Type','application/json')
+			response.end(JSON.stringify({login :res[0].login,readPage:res[0].readPage,readBook:res[0].readBook,avgMark:res[0].avgMark}))
+		}	
+
+	})
+
+
+
+})
+
+
+
 app.get("/checkIfAccountExsistAndSendOnMailResetPasswordCode",function(request,response){
 
 	var email=request.query.mail
