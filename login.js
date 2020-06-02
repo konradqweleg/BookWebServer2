@@ -102,6 +102,38 @@ app.get('/download', function(req, res){
 
 
 
+
+  app.get("howManyBookReaduser",function(request,response){
+	let userEmail=request.query.userEmail
+	showLogMessagge("SELECT count(book.nameBook) as nameBook,writers.name as nameWriters,book.idBook as IdBook,writers.surname as surnameWriters,single_book_mark.MarkBook as userMark from user inner join single_book_mark on single_book_mark.IdUser=user.IdUser inner join book on book.idBook=single_book_mark.IdBook inner join writers on writers.IdWriters=book.IdAuthors where user.EmailAdress='"+userEmail+"'"+" order by  single_book_mark.markBook desc,book.nameBook desc limit "+position+" ,1")
+
+
+	connection.query("SELECT count(book.nameBook) as nameBook,writers.name as nameWriters,book.idBook as IdBook,writers.surname as surnameWriters,single_book_mark.MarkBook as userMark from user inner join single_book_mark on single_book_mark.IdUser=user.IdUser inner join book on book.idBook=single_book_mark.IdBook inner join writers on writers.IdWriters=book.IdAuthors where user.EmailAdress='"+userEmail+"'"+" order by  single_book_mark.markBook desc,book.nameBook desc limit "+position+" ,1",function(x,res,x){
+		response.setHeader('Content-Type','application/json')
+			response.end(JSON.stringify({bookRead:res[0].nameBook}))
+	})
+
+
+  })
+
+
+  app.get("/getBookWhichUserRead",function(request,response){
+	let position=request.query.position
+	let userEmail=request.query.userEmail
+	showLogMessagge("->1 SELECT book.nameBook as nameBook,writers.name as nameWriters,book.idBook as IdBook,writers.surname as surnameWriters,single_book_mark.MarkBook as userMark from user inner join single_book_mark on single_book_mark.IdUser=user.IdUser inner join book on book.idBook=single_book_mark.IdBook inner join writers on writers.IdWriters=book.IdAuthors where user.EmailAdress='"+userEmail+"'"+" order by  single_book_mark.markBook desc,book.nameBook desc,book.idBook desc limit "+position+" ,1")
+	
+
+
+	connection.query("SELECT DISTINCT book.nameBook as nameBook,writers.name as nameWriters,book.idBook as IdBook,writers.surname as surnameWriters,single_book_mark.MarkBook as userMark from user inner join single_book_mark on single_book_mark.IdUser=user.IdUser inner join book on book.idBook=single_book_mark.IdBook inner join writers on writers.IdWriters=book.IdAuthors where user.EmailAdress='"+userEmail+"'"+" order by  single_book_mark.markBook desc,book.nameBook desc,book.idBook desc limit "+position+" ,1",function(x,res,x){
+		response.setHeader('Content-Type','application/json')
+			response.end(JSON.stringify({nameBook :res[0].nameBook,nameWriters:res[0].nameWriters,surnameWriters:res[0].surnameWriters,userMark:res[0].userMark,IdBook:res[0].IdBook}))
+	})
+
+
+
+
+  })
+
   app.get("/getUserImageProfile",function(request,response){
 	let userEmail=request.query.userEmail
 	showLogMessagge("Pobieram zdjęcie użytkownika")
@@ -789,6 +821,51 @@ app.get("/returnBookWithNameFilter",function(request,response){
 
 
 
+})
+
+
+
+app.get("/giveBookWithOneUserRead",function(request,response){
+	let numberBooks=request.query.numberBook;
+	let userEmail=request.query.userEmail
+
+	showLogMessagge("->2 select book.idBook as idBook,book.Description as description,book.countPage as page,book.yearPublish as year,book.nameBook as titleBook,writers.name as nameAuthor,writers.surname as surnameAuthor,count(single_book_mark.IdBook) as countMark,ROUND(avg(single_book_mark.MarkBook),2) as markBook,gentre.DescriptionGentre as gentreBook from book left outer join writers on book.idAuthors=writers.IdWriters left outer join single_book_mark on single_book_mark.IdBook=book.idBook left outer join gentreandbook on gentreandbook.idBook=book.idBook inner join gentre on gentre.IdGentre=gentreandbook.idGentre INNER join user on single_book_mark.IdUser=user.IdUser where user.EmailAdress='"+userEmail+"' group by single_book_mark.IdBook,book.nameBook,writers.name,writers.surname,gentre.DescriptionGentre order by  single_book_mark.markBook desc,book.nameBook desc,book.idBook desc limit "+numberBooks+" ,1")
+
+	try{
+	connection.query("select book.idBook as idBook,book.Description as description,book.countPage as page,book.yearPublish as year,book.nameBook as titleBook,writers.name as nameAuthor,writers.surname as surnameAuthor,count(single_book_mark.IdBook) as countMark,ROUND(avg(single_book_mark.MarkBook),2) as markBook,gentre.DescriptionGentre as gentreBook from book left outer join writers on book.idAuthors=writers.IdWriters left outer join single_book_mark on single_book_mark.IdBook=book.idBook left outer join gentreandbook on gentreandbook.idBook=book.idBook inner join gentre on gentre.IdGentre=gentreandbook.idGentre INNER join user on single_book_mark.IdUser=user.IdUser where user.EmailAdress='"+userEmail+"' group by single_book_mark.IdBook,book.nameBook,writers.name,writers.surname,gentre.DescriptionGentre order by  single_book_mark.markBook desc,book.nameBook desc,book.idBook desc limit "+numberBooks+" ,1",function(err,res,x){
+		if(res.length>0){
+
+
+			connection.query("select gentre.DescriptionGentre as gentreBook from book left outer join gentreandbook on gentreandbook.idBook=book.idBook left outer join gentre on gentre.IdGentre=gentreandbook.idGentre where book.idBook="+res[0].idBook,function(fgh,resp,ff){
+				if(resp.length>0){
+					let gentreBook=[" "," "," "," "," "," "," "," "," "]
+					for(let i=0;i<resp.length;i++){
+						showLogMessagge(resp[i].gentreBook)
+						gentreBook[i]=resp[i].gentreBook
+					}
+
+					var markBookFinal=res[0].markBook
+					if(markBookFinal==null){
+						showLogMessagge("Jest null daje o")
+						markBookFinal=0
+		
+					}
+					response.setHeader('Content-Type','application/json')
+		    response.end(JSON.stringify({idBook:res[0].idBook,titleBook:res[0].titleBook,nameAuthor:res[0].nameAuthor+" "+res[0].surnameAuthor,markBook:markBookFinal,gentreBook:res[0].gentreBook,pageBook:res[0].page,yearPublish:res[0].year,descriptionBook:res[0].description,countMark:res[0].countMark,gentre_1:gentreBook[0],gentre_2:gentreBook[1],gentre_3:gentreBook[2],gentre_4:gentreBook[3],gentre_5:gentreBook[4],gentre_6:gentreBook[5],gentre_7:gentreBook[6],gentre_8:gentreBook[7]}))		
+
+				}
+			})
+
+			
+			
+	}
+})
+
+
+	}
+	catch( x){
+			showLogMessagge("Error:"+x)
+	}
 })
 
 app.get("/giveBookWithOneCategory",function(request,response){
