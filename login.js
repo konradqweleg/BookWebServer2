@@ -33,6 +33,7 @@ IS_LOG_SHOW=true
 
 
 
+const fs = require('fs');
 var nodemailer = require('nodemailer');
 
 var transporter = nodemailer.createTransport({
@@ -51,16 +52,8 @@ function showLogMessagge(message){
 }
 
 
-const fs = require('fs');
+require('./profilUser')(app,connection);
 
-app.get('/download', function(req, res){
-
-	var file = fs.readFileSync(__dirname + '\\arar.apk', 'binary');
-  
-	res.setHeader('Content-Length', file.length);
-	res.write(file, 'binary');
-	res.end();
-  });
 
 
   Date.prototype.addHours=function(h){
@@ -69,25 +62,31 @@ app.get('/download', function(req, res){
   }
 
   function addResetPasswordCodeToPasswordResetTable(email,code){
-	showLogMessagge("Kopiuję dane do tabeli password reset")
-	connection.query("Select * from user where EmailAdress=?",[email],function(err,res,fie){
+	showLogMessagge("Resetuje hasło użytkownika :"+email+" kod werfikacyjny to:"+code)  
+
+	const FIND_USER_ABOUT_THIS_MAIL_QUERY="Select * from user where EmailAdress=?"
+
+	const DELETE_PASSWORD_RESET_CODE_FROM_DATABASE_QUERY="DELETE FROM password_reset where IdUser=?"
+
+	const INSERT_PASWORD_RESET_CODE_TO_DATABSE_QUERY="INSERT INTO password_reset values(null,"
+	
+	connection.query(FIND_USER_ABOUT_THIS_MAIL_QUERY,[email],function(err,res,fie){
 		if(res.length>0){
 			
-
-	
-			connection.query("DELETE FROM password_reset where IdUser="+res[0].IdUser,function(err,res){
+			connection.query(DELETE_PASSWORD_RESET_CODE_FROM_DATABASE_QUERY,[res[0].IdUser],function(err,res){
 				if(err) throw err;
 				
 			})		
 
+
 			futureExpireDateCode=new Date().addHours(2)
 			
-	connection.query("INSERT INTO password_reset values(null,"+res[0].IdUser+",\'"+code+"\',\'"+ futureExpireDateCode.getFullYear()+"-"+(futureExpireDateCode.getMonth()+1)+"="+futureExpireDateCode.getDate()+"-"+futureExpireDateCode.getHours()+"-"+futureExpireDateCode.getMinutes()+"-"+futureExpireDateCode.getSeconds()+"\'"+")",function(err,res){
-		if(err) throw err;
+			connection.query(INSERT_PASWORD_RESET_CODE_TO_DATABSE_QUERY+res[0].IdUser+",\'"+code+"\',\'"+ futureExpireDateCode.getFullYear()+"-"+(futureExpireDateCode.getMonth()+1)+"="+futureExpireDateCode.getDate()+"-"+futureExpireDateCode.getHours()+"-"+futureExpireDateCode.getMinutes()+"-"+futureExpireDateCode.getSeconds()+"\'"+")",function(err,res){
+				if(err) throw err;
 		
 	
 		
-	})
+			})
 			
 
 
@@ -103,78 +102,18 @@ app.get('/download', function(req, res){
 
 
 
-  app.get("howManyBookReaduser",function(request,response){
-	let userEmail=request.query.userEmail
-	showLogMessagge("SELECT count(book.nameBook) as nameBook,writers.name as nameWriters,book.idBook as IdBook,writers.surname as surnameWriters,single_book_mark.MarkBook as userMark from user inner join single_book_mark on single_book_mark.IdUser=user.IdUser inner join book on book.idBook=single_book_mark.IdBook inner join writers on writers.IdWriters=book.IdAuthors where user.EmailAdress='"+userEmail+"'"+" order by  single_book_mark.markBook desc,book.nameBook desc limit "+position+" ,1")
-
-
-	connection.query("SELECT count(book.nameBook) as nameBook,writers.name as nameWriters,book.idBook as IdBook,writers.surname as surnameWriters,single_book_mark.MarkBook as userMark from user inner join single_book_mark on single_book_mark.IdUser=user.IdUser inner join book on book.idBook=single_book_mark.IdBook inner join writers on writers.IdWriters=book.IdAuthors where user.EmailAdress='"+userEmail+"'"+" order by  single_book_mark.markBook desc,book.nameBook desc limit "+position+" ,1",function(x,res,x){
-		response.setHeader('Content-Type','application/json')
-			response.end(JSON.stringify({bookRead:res[0].nameBook}))
-	})
-
-
-  })
-
-
-  app.get("/getBookWhichUserRead",function(request,response){
-	let position=request.query.position
-	let userEmail=request.query.userEmail
-	showLogMessagge("->1 SELECT book.nameBook as nameBook,writers.name as nameWriters,book.idBook as IdBook,writers.surname as surnameWriters,single_book_mark.MarkBook as userMark from user inner join single_book_mark on single_book_mark.IdUser=user.IdUser inner join book on book.idBook=single_book_mark.IdBook inner join writers on writers.IdWriters=book.IdAuthors where user.EmailAdress='"+userEmail+"'"+" order by  single_book_mark.markBook desc,book.nameBook desc,book.idBook desc limit "+position+" ,1")
-	
-
-
-	connection.query("SELECT DISTINCT book.nameBook as nameBook,writers.name as nameWriters,book.idBook as IdBook,writers.surname as surnameWriters,single_book_mark.MarkBook as userMark from user inner join single_book_mark on single_book_mark.IdUser=user.IdUser inner join book on book.idBook=single_book_mark.IdBook inner join writers on writers.IdWriters=book.IdAuthors where user.EmailAdress='"+userEmail+"'"+" order by  single_book_mark.markBook desc,book.nameBook desc,book.idBook desc limit "+position+" ,1",function(x,res,x){
-		response.setHeader('Content-Type','application/json')
-			response.end(JSON.stringify({nameBook :res[0].nameBook,nameWriters:res[0].nameWriters,surnameWriters:res[0].surnameWriters,userMark:res[0].userMark,IdBook:res[0].IdBook}))
-	})
 
 
 
-
-  })
-
-  app.get("/getUserImageProfile",function(request,response){
-	let userEmail=request.query.userEmail
-	showLogMessagge("Pobieram zdjęcie użytkownika")
-
-	const fs = require('fs')
-	const path = 'C:\\BookWebServer\\userImg\\'+userEmail+".jpg"
-
-	try {
- 	 if (fs.existsSync(path)) {
-		response.sendFile("C:\\BookWebServer\\userImg\\"+userEmail+".jpg")
-    	
- 	 }else{
-		response.sendFile("C:\\BookWebServer\\userImg\\blazej.jpg")
-	  }
-	} catch(err) {
-  		console.error(err)
-	}
-
-
-
-
-  })
+ 
 
 
 
 
 
-app.get("/getUserDataSettings",function(request,response){
-	let userEmail=request.query.userEmail
-	showLogMessagge("SELECT user.Login as login,sum(book.countPage) as readPage,count(*) as readBook,avg(single_book_mark.MarkBook) as avgMark FROM `user` inner join single_book_mark on single_book_mark.IdUser=user.IdUser inner join book on book.idBook=single_book_mark.IdBook WHERE EmailAdress="+userEmail)
-	connection.query("SELECT user.Login as login,sum(book.countPage) as readPage,count(*) as readBook,avg(single_book_mark.MarkBook) as avgMark FROM `user` inner join single_book_mark on single_book_mark.IdUser=user.IdUser inner join book on book.idBook=single_book_mark.IdBook WHERE EmailAdress='"+userEmail+"'",function(err,res,x){
-		if(res.length>0){
-			response.setHeader('Content-Type','application/json')
-			response.end(JSON.stringify({login :res[0].login,readPage:res[0].readPage,readBook:res[0].readBook,avgMark:res[0].avgMark}))
-		}	
-
-	})
 
 
 
-})
 
 
 
