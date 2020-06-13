@@ -46,11 +46,16 @@ module.exports = function (app,connection) {
          inner join book on book.idBook=single_book_mark.IdBook inner join writers on writers.IdWriters=book.IdAuthors \
          where user.EmailAdress=? order by  single_book_mark.markBook desc,book.nameBook desc ",[userEmail])
     
-        connection.query(HOW_MANY_READ_BOOK_USER_QUERY,function(_,res,_){
+         try{
+             connection.query(HOW_MANY_READ_BOOK_USER_QUERY,function(_,res,_){
                 response.setHeader('Content-Type','application/json')
                 LOG.showLogMessagge("Użytkownik przeczytał: "+res[0].howReadBook+" książek")
                 response.end(JSON.stringify({bookRead:res[0].howReadBook}))
-        })
+            })
+
+      }catch(err){
+            console.error(err)
+      }
     
     
       })
@@ -66,10 +71,10 @@ module.exports = function (app,connection) {
     
         try {
           if (fs.existsSync(PATH_USER_PROFILE_IMAGE)) {
-            response.sendFile(DEFAULT_PROFILE_IMAGE)
+            response.sendFile(PATH_USER_PROFILE_IMAGE)
             
           }else{
-            response.sendFile()
+            response.sendFile(DEFAULT_PROFILE_IMAGE)
           }
         } catch(err) {
               console.error(err)
@@ -88,17 +93,23 @@ module.exports = function (app,connection) {
          as readBook,avg(single_book_mark.MarkBook) as avgMark FROM `user` inner join single_book_mark on single_book_mark.IdUser=user.IdUser\
           inner join book on book.idBook=single_book_mark.IdBook WHERE EmailAdress=?",[userEmail])
 
+        try{
        
-        connection.query(USER_INFORMATION_STATISTICS_QUERY,function(_,res,_){
-            if(res.length>0){
-                LOG.showLogMessagge("Zwracam statystyki użytkownika: "+userEmail+" ,przeczytane strony:"+res[0].readPage+","+
-                " książki:"+res[0].readBook+" ,średnia ocena:"+res[0].avgMark)
+          connection.query(USER_INFORMATION_STATISTICS_QUERY,function(_,res,_){
+              if(res.length>0){
+                  LOG.showLogMessagge("Zwracam statystyki użytkownika: "+userEmail+" ,przeczytane strony:"+res[0].readPage+","+
+                  " książki:"+res[0].readBook+" ,średnia ocena:"+res[0].avgMark)
 
-                response.setHeader('Content-Type','application/json')
-                response.end(JSON.stringify({login :res[0].login,readPage:res[0].readPage,readBook:res[0].readBook,avgMark:res[0].avgMark}))
-            }	
+                  response.setHeader('Content-Type','application/json')
+                  response.end(JSON.stringify({login :res[0].login,readPage:res[0].readPage,readBook:res[0].readBook,avgMark:res[0].avgMark}))
+              }	
     
-        })
+         })
+
+
+      }catch(err){
+        console.error(err)
+      }
     
     
     
@@ -106,11 +117,5 @@ module.exports = function (app,connection) {
 
 
 
-
-
-
-
-
-      
 }
 
