@@ -370,6 +370,139 @@ module.exports = function(app, connection) {
     })
 
 
+    app.get("/giveTopBook", function(request, response) {
+        let numberBooks = parseInt(request.query.numberBook)
+    
+        LOG.showLogMessagge("Zwracam książke z top"+numberBooks)
+
+
+        try {
+
+            const FIND_SEARCH_BOOK_ABOUT_POSITION=connection.format("select book.idBook as idBook,book.Description as description\
+            ,book.countPage as page,book.yearPublish as year,book.nameBook as titleBook,writers.name as nameAuthor,\
+            writers.surname as surnameAuthor ,count(single_book_mark.IdBook) as countMark,\
+            ROUND(avg(single_book_mark.MarkBook),2) as markBook,gentre.DescriptionGentre as gentreBook from book\
+             left outer join writers on book.idAuthors=writers.IdWriters left outer join single_book_mark on\
+              single_book_mark.IdBook=book.idBook left outer join gentreandbook on gentreandbook.idBook=book.idBook\
+               left outer join gentre on gentre.IdGentre=gentreandbook.idGentre group by single_book_mark.IdBook,\
+               book.nameBook,writers.name,writers.surname,gentre.DescriptionGentre order by\
+               ROUND(avg(single_book_mark.MarkBook),2) desc limit ?,1",[numberBooks])
+            connection.query(FIND_SEARCH_BOOK_ABOUT_POSITION, function(_, res, _) {
+                if (res.length > 0) {
+
+                    const FIND_GENTRE_BOOK_QUERY=connection.format("select gentre.DescriptionGentre as gentreBook from book left outer join\
+                     gentreandbook on gentreandbook.idBook=book.idBook left outer join gentre on gentre.IdGentre=gentreandbook.idGentre where \
+                     book.idBook=?" ,[res[0].idBook])
+                    connection.query(FIND_GENTRE_BOOK_QUERY, function(_, resp, _) {
+                        if (resp.length > 0) {
+                            let gentreBook = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
+                            for (let i = 0; i < resp.length; i++) {
+                                
+                                gentreBook[i] = resp[i].gentreBook
+                            }
+
+                            var markBookFinal = res[0].markBook
+                            if (markBookFinal == null) {
+                             
+                                markBookFinal = 0
+
+                            }
+
+
+                            LOG.showLogMessagge("ksiązka  id :"+res[0].idBook+" nazwa:"+res[0].titleBook+" autor:"+res[0].nameAuthor+" "
+                            +res[0].surnameAuthor+" ocena:"+res[0].markBookFinal+" strony:"+res[0].page+" rok powstania:"+res[0].yearPublish
+                            +" opis:"+res[0].description+" ilość ocen:"+res[0].countMark+" gatunek:"+gentreBook[0]+" gatunek2:"+gentreBook[1]+
+                            " gatunek3:"+gentreBook[2])
+                            response.end(JSON.stringify({
+                                idBook: res[0].idBook,
+                                titleBook: res[0].titleBook,
+                                nameAuthor: res[0].nameAuthor + " " + res[0].surnameAuthor,
+                                markBook: markBookFinal,
+                                gentreBook: res[0].gentreBook,
+                                pageBook: res[0].page,
+                                yearPublish: res[0].year,
+                                descriptionBook: res[0].description,
+                                countMark: res[0].countMark,
+                                gentre_1: gentreBook[0],
+                                gentre_2: gentreBook[1],
+                                gentre_3: gentreBook[2],
+                                gentre_4: gentreBook[3],
+                                gentre_5: gentreBook[4],
+                                gentre_6: gentreBook[5],
+                                gentre_7: gentreBook[6],
+                                gentre_8: gentreBook[7]
+                            }))
+                           
+
+                        }
+                    })
+
+                    response.setHeader('Content-Type', 'application/json')
+
+                }
+            })
+
+
+        } catch (x) {
+            LOG.showLogMessagge("Error:" + x)
+        }
+    })
+
+    app.get("/getTopBook",function(request,response){
+        
+        let position=parseInt(request.query.position)
+        LOG.showLogMessagge("Zwracam ranking książek pozycja:"+position)
+        const CHOICE_TOP_BOOK_QUERY=connection.format("select book.idBook as idBook,book.Description as description\
+         ,book.countPage as page,book.yearPublish as year,book.nameBook as titleBook,writers.name as nameAuthor,\
+         writers.surname as surnameAuthor ,count(single_book_mark.IdBook) as countMark,\
+         ROUND(avg(single_book_mark.MarkBook),2) as markBook,gentre.DescriptionGentre as gentreBook from book\
+          left outer join writers on book.idAuthors=writers.IdWriters left outer join single_book_mark on\
+           single_book_mark.IdBook=book.idBook left outer join gentreandbook on gentreandbook.idBook=book.idBook\
+            left outer join gentre on gentre.IdGentre=gentreandbook.idGentre group by single_book_mark.IdBook,\
+            book.nameBook,writers.name,writers.surname,gentre.DescriptionGentre order by\
+            ROUND(avg(single_book_mark.MarkBook),2) desc limit ?,1",[position])
+
+             try {
+                connection.query(CHOICE_TOP_BOOK_QUERY, function(_, res, _) {
+                    if (res.length > 0) {
+                        response.setHeader('Content-Type', 'application/json')
+                        var markBookFinal = res[0].markBook
+                      
+                        if (markBookFinal == null) {
+                         
+                            markBookFinal = 0
+    
+                        }
+                        response.end(JSON.stringify({
+                            idBook: res[0].idBook,
+                            titleBook: res[0].titleBook,
+                            nameAuthor: res[0].nameAuthor + " " + res[0].surnameAuthor,
+                            markBook: markBookFinal,
+                            gentreBook: res[0].gentreBook,
+                            pageBook: res[0].page,
+                            yearPublish: res[0].year,
+                            descriptionBook: res[0].description,
+                            countMark: res[0].countMark,
+                            gentre_1: " ",
+                            gentre_2: " ",
+                            gentre_3: " ",
+                            gentre_4: " ",
+                            gentre_5: " ",
+                            gentre_6: " ",
+                            gentre_7: " ",
+                            gentre_8: " "
+                        }))
+                    }
+                })
+    
+    
+            } catch (x) {
+                LOG.showLogMessagge("Error:" + x)
+            }
+
+
+    })
+
     app.get("/getBookWithOneCategoryWithFilter", function(request, response) {
         let category = request.query.category
         let position = parseInt(request.query.position)
